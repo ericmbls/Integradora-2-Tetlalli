@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor() {
     const callbackURL = `${process.env.API_URL}/api/auth/google/callback`;
-    console.log('🚀 Google OAuth callbackURL:', callbackURL);
+    console.log('Google OAuth callbackURL:', callbackURL);
 
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,

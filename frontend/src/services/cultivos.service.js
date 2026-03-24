@@ -2,7 +2,6 @@ const API_URL = `${import.meta.env.VITE_API_URL}/api/cultivos`;
 
 const getToken = () => localStorage.getItem("token");
 
-// ✅ Ya no concatenamos nada, el backend devuelve la URL completa
 const normalizeCultivo = (cultivo) => ({
   ...cultivo,
   imagen: cultivo.imagen || null,

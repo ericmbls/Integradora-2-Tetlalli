@@ -21,17 +21,26 @@ export class AuthController {
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth() {}
+  async googleAuth() {
+    // El guard se encarga de redirigir a Google
+  }
 
- @Get('google/callback')
-@UseGuards(AuthGuard('google'))
-async googleCallback(@Req() req, @Res() res: Response) {
-  const { email, name } = req.user;
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  async googleCallback(@Req() req, @Res() res: Response) {
+    const { email, name } = req.user;
+    const result = await this.authService.validateGoogleUser(email, name);
 
-  const result = await this.authService.validateGoogleUser(email, name);
+    // Redirige solo con el token, no con el objeto user
+    return res.redirect(
+      `${process.env.FRONTEND_URL}/auth/success?token=${result.access_token}`
+    );
+  }
 
-  return res.redirect(
-    `${process.env.FRONTEND_URL}/auth/success?token=${result.access_token}&user=${encodeURIComponent(JSON.stringify(result.user))}`
-  );
-}
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  async getProfile(@Req() req) {
+    // Devuelve los datos del usuario autenticado
+    return req.user;
+  }
 }

@@ -12,9 +12,7 @@ export const authFetch = (url, options = {}) => {
   if (!(options.body instanceof FormData)) {
     headers["Content-Type"] = "application/json";
   }
-
-  // Aseguramos que la URL final no duplique /api
-  const baseUrl = import.meta.env.VITE_API_URL; // debe ser solo el dominio, sin /api
+  const baseUrl = import.meta.env.VITE_API_URL; 
   const finalUrl = `${baseUrl}${url.startsWith("/") ? url : `/${url}`}`;
 
   return fetch(finalUrl, {

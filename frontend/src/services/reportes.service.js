@@ -1,6 +1,5 @@
 import { authFetch } from "./authFetch";
 
-// ✅ Normalización: usar directamente la URL que devuelve el backend
 const normalizeReporte = (reporte) => ({
   ...reporte,
   imagen: reporte.imagen || null,
