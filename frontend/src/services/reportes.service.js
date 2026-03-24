@@ -6,8 +6,7 @@ const normalizeReporte = (reporte) => ({
 });
 
 export async function getReportesByCultivo(cultivoId) {
-  const res = await authFetch(`/reportes/cultivo/${cultivoId}`);
-
+  const res = await authFetch(`/reportes/cultivo/${cultivoId}`); // ✅ sin /api
   if (!res.ok) throw new Error("Error cargando reportes");
 
   const data = await res.json();
@@ -15,7 +14,7 @@ export async function getReportesByCultivo(cultivoId) {
 }
 
 export async function createReporte(data) {
-  const res = await authFetch("/reportes", {
+  const res = await authFetch("/reportes", { // ✅ sin /api
     method: "POST",
     body: data,
   });

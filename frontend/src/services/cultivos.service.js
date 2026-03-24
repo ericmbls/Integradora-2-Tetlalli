@@ -6,10 +6,8 @@ const normalizeCultivo = (cultivo) => ({
 });
 
 export const getCultivos = async () => {
-  const res = await authFetch("/cultivos");
-
+  const res = await authFetch("/cultivos"); // ✅ sin /api
   if (!res.ok) throw new Error("Error obteniendo cultivos");
-
   const data = await res.json();
   return Array.isArray(data) ? data.map(normalizeCultivo) : [];
 };
@@ -17,7 +15,7 @@ export const getCultivos = async () => {
 export const createCultivo = async (data) => {
   const res = await authFetch("/cultivos", {
     method: "POST",
-    body: data instanceof FormData ? data : JSON.stringify(data),
+    body: data,
   });
 
   if (!res.ok) {
@@ -33,7 +31,7 @@ export const createCultivo = async (data) => {
 export const updateCultivo = async (id, data) => {
   const res = await authFetch(`/cultivos/${id}`, {
     method: "PATCH",
-    body: data instanceof FormData ? data : JSON.stringify(data),
+    body: data,
   });
 
   if (!res.ok) throw new Error("Error actualizando cultivo");
