@@ -42,7 +42,7 @@ export default function LoginForm({ onLogin, mode = 'login' }) {
 
     setLoading(true);
 
-    const endpoint = mode === 'login' ? '/auth/login' : '/auth/register';
+    const endpoint = mode === 'login' ? '/api/auth/login' : '/api/auth/register';
 
     const body = mode === 'login'
       ? { email: formData.email, password: formData.password }
