@@ -1,6 +1,4 @@
-const API_URL = `${import.meta.env.VITE_API_URL}/api/cultivos`;
-
-const getToken = () => localStorage.getItem("token");
+import { authFetch } from "./authFetch";
 
 const normalizeCultivo = (cultivo) => ({
   ...cultivo,
@@ -8,55 +6,48 @@ const normalizeCultivo = (cultivo) => ({
 });
 
 export const getCultivos = async () => {
-  const res = await fetch(API_URL, {
-    headers: { Authorization: `Bearer ${getToken()}` },
-  });
+  const res = await authFetch("/cultivos");
+
   if (!res.ok) throw new Error("Error obteniendo cultivos");
+
   const data = await res.json();
   return Array.isArray(data) ? data.map(normalizeCultivo) : [];
 };
 
 export const createCultivo = async (data) => {
-  const headers =
-    data instanceof FormData
-      ? { Authorization: `Bearer ${getToken()}` }
-      : { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` };
-
-  const res = await fetch(API_URL, {
+  const res = await authFetch("/cultivos", {
     method: "POST",
-    headers,
     body: data instanceof FormData ? data : JSON.stringify(data),
   });
+
   if (!res.ok) {
     const errorText = await res.text();
     console.error(errorText);
     throw new Error("Error creando cultivo");
   }
+
   const cultivo = await res.json();
   return normalizeCultivo(cultivo);
 };
 
 export const updateCultivo = async (id, data) => {
-  const headers =
-    data instanceof FormData
-      ? { Authorization: `Bearer ${getToken()}` }
-      : { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` };
-
-  const res = await fetch(`${API_URL}/${id}`, {
+  const res = await authFetch(`/cultivos/${id}`, {
     method: "PATCH",
-    headers,
     body: data instanceof FormData ? data : JSON.stringify(data),
   });
+
   if (!res.ok) throw new Error("Error actualizando cultivo");
+
   const cultivo = await res.json();
   return normalizeCultivo(cultivo);
 };
 
 export const deleteCultivo = async (id) => {
-  const res = await fetch(`${API_URL}/${id}`, {
+  const res = await authFetch(`/cultivos/${id}`, {
     method: "DELETE",
-    headers: { Authorization: `Bearer ${getToken()}` },
   });
+
   if (!res.ok) throw new Error("Error eliminando cultivo");
+
   return true;
 };

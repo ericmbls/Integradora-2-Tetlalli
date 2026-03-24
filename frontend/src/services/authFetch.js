@@ -14,16 +14,18 @@ export const authFetch = async (url, options = {}) => {
   }
 
   const baseUrl = import.meta.env.VITE_API_URL;
-  const finalUrl = `${baseUrl}${url.startsWith("/") ? url : `/${url}`}`;
+
+  // 🔥 CENTRALIZAMOS /api AQUÍ
+  const finalUrl = `${baseUrl}/api${url.startsWith("/") ? url : `/${url}`}`;
 
   const response = await fetch(finalUrl, {
     ...options,
     headers,
   });
 
-  // 🔥 manejo global de errores
+  // 🔥 manejo global de sesión
   if (response.status === 401) {
-    console.error("Token inválido o expirado");
+    console.error("Sesión expirada");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     window.location.href = "/login";

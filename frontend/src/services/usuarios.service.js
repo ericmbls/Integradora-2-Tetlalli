@@ -1,45 +1,24 @@
-const API_URL = `${import.meta.env.VITE_API_URL}/api/usuarios`;
-const AUTH_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
+import { authFetch } from "./authFetch";
 
-const getToken = () => localStorage.getItem("token");
+// 🔥 USUARIOS
 
-const request = async (url, options = {}) => {
-  const token = getToken();
+export const getUsuarios = async () => {
+  const res = await authFetch("/usuarios");
 
-  const headers = {
-    ...(options.headers || {}),
-    ...(token ? { Authorization: `Bearer ${token}` } : {})
-  };
-
-  const res = await fetch(url, {
-    ...options,
-    headers
-  });
-
-  if (!res.ok) {
-    let message = "Error en la solicitud";
-    try {
-      const data = await res.json();
-      message = data.message || message;
-    } catch {}
-    throw new Error(message);
-  }
+  if (!res.ok) throw new Error("Error obteniendo usuarios");
 
   return res.json();
 };
 
-export const getUsuarios = async () => {
-  return request(API_URL);
-};
-
 export const createUsuarioAdmin = async (data) => {
-  return request(API_URL, {
+  const res = await authFetch("/usuarios", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
+
+  if (!res.ok) throw new Error("Error creando usuario");
+
+  return res.json();
 };
 
 export const updateUsuario = async (id, data) => {
@@ -47,37 +26,52 @@ export const updateUsuario = async (id, data) => {
     data.role = data.role.toLowerCase();
   }
 
-  return request(`${API_URL}/${id}`, {
+  const res = await authFetch(`/usuarios/${id}`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
+
+  if (!res.ok) throw new Error("Error actualizando usuario");
+
+  return res.json();
 };
 
 export const deleteUsuario = async (id) => {
-  return request(`${API_URL}/${id}`, {
-    method: "DELETE"
+  const res = await authFetch(`/usuarios/${id}`, {
+    method: "DELETE",
   });
+
+  if (!res.ok) throw new Error("Error eliminando usuario");
+
+  return true;
 };
 
+// 🔥 AUTH
+
 export const registerUsuario = async (data) => {
-  return request(`${AUTH_URL}/register`, {
+  const res = await authFetch("/auth/register", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
+
+  if (!res.ok) {
+    const error = await res.text();
+    throw new Error(error || "Error registrando usuario");
+  }
+
+  return res.json();
 };
 
 export const loginUsuario = async (data) => {
-  return request(`${AUTH_URL}/login`, {
+  const res = await authFetch("/auth/login", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
+
+  if (!res.ok) {
+    const error = await res.text();
+    throw new Error(error || "Error en login");
+  }
+
+  return res.json();
 };
