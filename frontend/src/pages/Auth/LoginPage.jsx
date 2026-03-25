@@ -481,13 +481,15 @@ export default function LoginPage({ setIsLoggedIn, setToken }) {
             </div>
 
             <button
-              type="button"
-              className="lp-google-btn"
-              onClick={() => { window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`; }}
-            >
-              <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" />
-              Continuar con Google
-            </button>
+  type="button"
+  className="lp-google-btn"
+  onClick={() => {
+    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
+  }}
+>
+  <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" />
+  Continuar con Google
+</button>
           </div>
         </div>
       </div>
