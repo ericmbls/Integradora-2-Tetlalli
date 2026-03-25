@@ -4,6 +4,7 @@ import {
   Thermometer, TrendingUp, Calendar, MapPin, Leaf, BarChart3,
   Activity, Check, Wind, Gauge, ArrowUp, ArrowDown, Clock
 } from "lucide-react";
+import { getCultivos } from "../../services/cultivos.service"; // ← Importar el servicio
 
 const T = {
   bg:       "#fffaf8",
@@ -18,16 +19,8 @@ const T = {
   textDark: "#2d3748",
 };
 
-const fetchWithAuth = async (url, options = {}) => {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("No hay token de autenticación");
-  const res = await fetch(url, {
-    ...options,
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, ...(options.headers || {}) },
-  });
-  if (!res.ok) throw new Error(`Error ${res.status}: ${await res.text()}`);
-  return res.json();
-};
+// Eliminar fetchWithAuth ya que no se usará más
+// const fetchWithAuth = async (url, options = {}) => { ... }
 
 const SectionTitle = ({ icon: Icon, label }) => (
   <h3 style={{ display:"flex", alignItems:"center", gap:"0.5rem", margin:0,
@@ -79,11 +72,16 @@ export default function DashboardPage() {
 
   useEffect(() => {
     (async () => {
-      setLoading(true); setError(null);
+      setLoading(true); 
+      setError(null);
       try {
-        const API_URL = import.meta.env.VITE_API_URL;
-        if (!API_URL) throw new Error("API_URL no está definida");
-        const data = await fetchWithAuth(`${API_URL}/api/cultivos`);
+        // 🔄 CAMBIO: Usar getCultivos en lugar de fetchWithAuth
+        const data = await getCultivos();
+        
+        // Validar que data es un array
+        if (!Array.isArray(data)) {
+          throw new Error("El servicio getCultivos no devolvió un array");
+        }
 
         setKpis([{
           title:"Total de cultivos", value:data.length,
@@ -116,6 +114,7 @@ export default function DashboardPage() {
           {id:4,tarea:"Cosecha - Tomates",                 fecha:"18 Mar, 9:00 AM",  completada:false, prioridad:"baja"},
         ]);
       } catch (err) {
+        console.error("Error al cargar cultivos:", err);
         setError(err.message||"Error al cargar los datos del dashboard");
       } finally {
         setLoading(false);
@@ -128,6 +127,8 @@ export default function DashboardPage() {
 
   const maxTipo = cultivosPorTipo.length ? Math.max(...cultivosPorTipo.map(t=>t.total)) : 1;
 
+  // ... (resto del JSX permanece igual)
+  
   if (loading) return (
     <div style={{ display:"flex",flexDirection:"column",alignItems:"center",
       justifyContent:"center",minHeight:"60vh",background:T.bg }}>
@@ -158,6 +159,8 @@ export default function DashboardPage() {
       }}>Reintentar</button>
     </div>
   );
+
+
 
   return (
     <>
