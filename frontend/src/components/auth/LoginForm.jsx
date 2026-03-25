@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Mail, Lock, User, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from "../../context/AuthContext";
+import { authFetch } from "../../utils/authFetch"; // ✅ IMPORTANTE
 import './LoginForm.css';
 
 export default function LoginForm({ onLogin, mode = 'login' }) {
@@ -42,7 +43,9 @@ export default function LoginForm({ onLogin, mode = 'login' }) {
 
     setLoading(true);
 
-    const endpoint = mode === 'login' ? '/api/auth/login' : '/api/auth/register';
+    const endpoint = mode === 'login'
+      ? '/auth/login'
+      : '/auth/register';
 
     const body = mode === 'login'
       ? { email: formData.email, password: formData.password }
@@ -54,9 +57,8 @@ export default function LoginForm({ onLogin, mode = 'login' }) {
         };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
+      const res = await authFetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
 
@@ -95,6 +97,7 @@ export default function LoginForm({ onLogin, mode = 'login' }) {
       </div>
 
       <form onSubmit={handleSubmit} className="login-form" noValidate>
+
         {mode === 'register' && (
           <div className={`form-group ${errors['name'] ? 'has-error' : ''}`}>
             <label>Nombre</label>
@@ -107,7 +110,6 @@ export default function LoginForm({ onLogin, mode = 'login' }) {
                 value={formData.name}
                 onChange={handleChange}
                 className="form-input has-icon-left"
-                autoComplete="name"
               />
             </div>
             {errors['name'] && (
@@ -129,7 +131,6 @@ export default function LoginForm({ onLogin, mode = 'login' }) {
               value={formData.email}
               onChange={handleChange}
               className="form-input has-icon-left"
-              autoComplete="email"
             />
           </div>
           {errors['email'] && (
@@ -150,7 +151,6 @@ export default function LoginForm({ onLogin, mode = 'login' }) {
               value={formData.password}
               onChange={handleChange}
               className="form-input has-icon-left has-icon-right"
-              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
             />
             <button
               type="button"

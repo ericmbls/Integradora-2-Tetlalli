@@ -483,7 +483,7 @@ export default function LoginPage({ setIsLoggedIn, setToken }) {
             <button
               type="button"
               className="lp-google-btn"
-              onClick={() => { window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`; }}
+              onClick={() => { window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`; }}
             >
               <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" />
               Continuar con Google
