@@ -1,47 +1,27 @@
-export const authFetch = async (url, options = {}) => {
+export const authFetch = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");
 
   const headers = {
     ...(options.headers || {}),
+    ...(token && { Authorization: `Bearer ${token}` }),
   };
 
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-
-  // Solo agregar Content-Type si NO es FormData
   if (!(options.body instanceof FormData) && !headers["Content-Type"]) {
     headers["Content-Type"] = "application/json";
   }
 
   const baseUrl = import.meta.env.VITE_API_URL;
 
-  // 🔥 CENTRALIZAMOS /api AQUÍ
-  const finalUrl = `${baseUrl}/api${url.startsWith("/") ? url : `/${url}`}`;
+  const res = await fetch(`${baseUrl}${endpoint}`, {
+    ...options,
+    headers,
+  });
 
-  let response;
-
-  try {
-    response = await fetch(finalUrl, {
-      ...options,
-      headers,
-    });
-  } catch (error) {
-    console.error("Error de red:", error);
-    throw new Error("No se pudo conectar con el servidor");
-  }
-
-  // 🔥 manejo global de sesión
-  if (response.status === 401) {
-    console.error("Sesión expirada");
-
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-
+  if (res.status === 401) {
+    localStorage.clear();
     window.location.href = "/login";
-
-    throw new Error("Sesión expirada"); // 👈 IMPORTANTE
+    throw new Error("Sesión expirada");
   }
 
-  return response;
+  return res;
 };

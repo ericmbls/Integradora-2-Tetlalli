@@ -9,10 +9,7 @@ import { ReportesModule } from './reportes/reportes.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'production' 
-        ? '.env.production' 
-        : '.env.development',
+      isGlobal: true, 
     }),
     AuthModule,
     UsuariosModule,
